@@ -28,3 +28,4 @@ jobs:
         run: |
           pixi run -e py${{ matrix.python-version }} test
           pixi run -e py${{ matrix.python-version }} test-xarray
+          pixi run -e py${{ matrix.python-version }} test-multi-zarr
