@@ -1,58 +1,89 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=61" ]
+
 [project]
 name = "squashfspec"
 version = "0.1.0"
 description = "A simple fsspec driver for SquashFS files"
-authors = [
-    { name = "Junie", email = "junie@jetbrains.com" }
+authors = [ { name = "Junie", email = "junie@jetbrains.com" } ]
+requires-python = ">=3.9,<3.14"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.9, <3.14"
 dependencies = [
-    "fsspec",
-    "dissect.squashfs", "zarr",
+  "dissect-squashfs",
+  "fsspec",
+  "zarr",
 ]
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
+optional-dependencies.dev = [
+  "pytest",
 ]
-
-[project.entry-points."fsspec.protocols"]
-squash = "squashfspec:SquashFSFileSystem"
-squashedfs = "squashfspec:SquashFSFileSystem"
-
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+entry-points."fsspec.protocols".squash = "squashfspec:SquashFSFileSystem"
+entry-points."fsspec.protocols".squashedfs = "squashfspec:SquashFSFileSystem"
 
 [tool.setuptools]
-py-modules = ["squashfspec"]
+py-modules = [ "squashfspec" ]
 
-[tool.pixi.workspace]
-channels = ["conda-forge"]
-platforms = ["osx-64"]
+[tool.pixi]
+workspace = { channels = [ "conda-forge" ], platforms = [ "osx-64" ] }
+dependencies.dask = ">=2026.3.0,<2027"
+dependencies.fsspec = ">=2026.3.0,<2027"
+dependencies.netcdf4 = ">=1.7.4,<2"
+dependencies.python = ">=3.9,<3.14"
+dependencies.squashfs-tools = ">=4.7.5,<5"
+dependencies.xarray = ">=2026.4.0,<2027"
+dependencies.zarr = ">=3.1.6,<4"
+pypi-dependencies.squashfspec = { path = ".", editable = true }
+tasks.test = "python tests/test_driver.py"
+tasks.test-xarray = "python tests/test_xarray.py"
+feature.dev.dependencies.pytest = ">=9.0.3,<10"
+feature.dev.tasks.test = "python tests/test_driver.py"
+environments.default = { solve-group = "default" }
+environments.dev = { features = [ "dev" ], solve-group = "default" }
 
-[tool.pixi.pypi-dependencies]
-squashfspec = { path = ".", editable = true }
+[tool.ruff]
+target-version = "py310"
+line-length = 80
+# Avoid notebook churn from lint-only modernization.
+extend-exclude = [ "docs/notebooks/*.ipynb" ]
+lint.select = [ "E", "F", "G", "I", "PT", "PTH", "S", "TCH", "UP", "W" ]
+lint.ignore = [
+  "E203",   # Keep Black-compatible whitespace behaviour
+  "PT006",  # Existing parameterize style to be tightened incrementally
+  "PT007",  # Existing parameterize value style to be tightened incrementally
+  "PTH103", # pathlib migration will be done incrementally
+  "PTH118", # pathlib migration will be done incrementally
+  "S101",   # Allow assert usage for now (extensive in tests and checks)
+  "S311",   # Pseudo-random usage is non-cryptographic in this codebase
+  "S603",   # subprocess calls are currently intentional and reviewed manually
+  "S607",   # Allow partial executable paths in controlled environments
+  "UP006",  # Typing modernization deferred to follow-up cleanup
+  "UP007",  # Typing modernization deferred to follow-up cleanup
+  "UP022",  # Redirect modernisation deferred to follow-up cleanup
+  "UP035",  # Deprecated import migration deferred to follow-up cleanup
+  "UP045",  # Optional/Union modernization deferred to follow-up cleanup
+]
+lint.per-file-ignores."__init__.py" = [ "F401" ]
+lint.isort.import-heading = { first-party = "First-party", local-folder = "Local", standard-library = "Standard library", third-party = "Third-party" }
+lint.isort.known-first-party = [ "squashfspec", "tests" ]
 
-[tool.pixi.environments]
-default = { solve-group = "default" }
-dev = { features = ["dev"], solve-group = "default" }
+[tool.pylint]
+"MESSAGES CONTROL".disable = [
+  "C0114", # 'missing-module-docstring', Do not require module docstrings
+  "R0901", # 'too-many-ancestors', Allow many layers of sub-classing
+  "R0902", # 'too-many-instance-attribtes', Allow many attributes
+  "R0913", # 'too-many-arguments', Allow many function arguments
+  "R0914", # 'too-many-locals', Allow many local variables
+  "W0223", # 'abstract-method', Subclasses do not have to override all abstract methods
+]
+SIMILARITIES.min-similarity-lines = 10
+TYPECHECK.generated-members = [ "numpy.*" ]
 
-[tool.pixi.tasks]
-test = "python test_driver.py"
-test-xarray = "python test_xarray.py"
-
-[tool.pixi.dependencies]
-python = ">=3.9,<3.14"
-squashfs-tools = ">=4.7.5,<5"
-fsspec = ">=2026.3.0,<2027"
-xarray = ">=2026.4.0,<2027"
-zarr = ">=3.1.6,<4"
-dask = ">=2026.3.0,<2027"
-netcdf4 = ">=1.7.4,<2"
-
-[tool.pixi.feature.dev.dependencies]
-pytest = ">=9.0.3,<10"
-
-[tool.pixi.feature.dev.tasks]
-test = "python test_driver.py"
+[tool.codespell]
+ignore-words-list = "fo"
