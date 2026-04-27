@@ -61,6 +61,26 @@ ds = xr.open_dataset(
 print(ds)
 ```
 
+### Accessing Multiple Datasets
+
+If your SquashFS image contains multiple Zarr stores or datasets, you can access them by specifying the internal path:
+
+```python
+import xarray as xr
+
+# Open a specific dataset inside a SquashFS file containing multiple datasets
+ds = xr.open_dataset(
+    "squashedfs:///path/to/dataset.zarr",
+    engine="zarr",
+    consolidated=False,
+    backend_kwargs={
+        "storage_options": {"fo": "path/to/multidata.squash"}
+    },
+)
+
+print(ds)
+```
+
 ## Development
 
 This project uses [pixi](https://pixi.sh/) for dependency management and development workflows.
