@@ -1,0 +1,7 @@
+
+# pixi environments
+.pixi
+*.egg-info
+.venv*
+.idea
+__pycache__

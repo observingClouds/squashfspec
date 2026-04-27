@@ -1,0 +1,58 @@
+[project]
+name = "squashfspec"
+version = "0.1.0"
+description = "A simple fsspec driver for SquashFS files"
+authors = [
+    { name = "Junie", email = "junie@jetbrains.com" }
+]
+requires-python = ">=3.9, <3.14"
+dependencies = [
+    "fsspec",
+    "dissect.squashfs", "zarr",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[project.entry-points."fsspec.protocols"]
+squash = "squashfspec:SquashFSFileSystem"
+squashedfs = "squashfspec:SquashFSFileSystem"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["squashfspec"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-64"]
+
+[tool.pixi.pypi-dependencies]
+squashfspec = { path = ".", editable = true }
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+
+[tool.pixi.tasks]
+test = "python test_driver.py"
+test-xarray = "python test_xarray.py"
+
+[tool.pixi.dependencies]
+python = ">=3.9,<3.14"
+squashfs-tools = ">=4.7.5,<5"
+fsspec = ">=2026.3.0,<2027"
+xarray = ">=2026.4.0,<2027"
+zarr = ">=3.1.6,<4"
+dask = ">=2026.3.0,<2027"
+netcdf4 = ">=1.7.4,<2"
+
+[tool.pixi.feature.dev.dependencies]
+pytest = ">=9.0.3,<10"
+
+[tool.pixi.feature.dev.tasks]
+test = "python test_driver.py"
