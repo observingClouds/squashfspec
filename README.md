@@ -10,16 +10,16 @@ SquashFSpec allows you to treat a SquashFS image as a filesystem, enabling seaml
 
 ## Installation
 
-You can install `squashfspec` via pip:
+You can install `squashfspec` via pip from GitHub:
 
 ```bash
-pip install squashfspec
+pip install git+https://github.com/observingClouds/squashfspec.git
 ```
 
 Or using [pixi](https://pixi.sh/):
 
 ```bash
-pixi add squashfspec
+pixi add squashfspec --git https://github.com/observingClouds/squashfspec.git
 ```
 
 ## Usage
