@@ -30,22 +30,47 @@ entry-points."fsspec.protocols".squashedfs = "squashfspec:SquashFSFileSystem"
 [tool.setuptools]
 py-modules = [ "squashfspec" ]
 
-[tool.pixi]
-workspace = { channels = [ "conda-forge" ], platforms = [ "osx-64" ] }
-dependencies.dask = ">=2026.3.0,<2027"
-dependencies.fsspec = ">=2026.3.0,<2027"
-dependencies.netcdf4 = ">=1.7.4,<2"
-dependencies.python = ">=3.9,<3.14"
-dependencies.squashfs-tools = ">=4.7.5,<5"
-dependencies.xarray = ">=2026.4.0,<2027"
-dependencies.zarr = ">=3.1.6,<4"
-pypi-dependencies.squashfspec = { path = ".", editable = true }
-tasks.test = "python tests/test_driver.py"
-tasks.test-xarray = "python tests/test_xarray.py"
-feature.dev.dependencies.pytest = ">=9.0.3,<10"
-feature.dev.tasks.test = "python tests/test_driver.py"
-environments.default = { solve-group = "default" }
-environments.dev = { features = [ "dev" ], solve-group = "default" }
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-64", "linux-64"]
+
+[tool.pixi.dependencies]
+dask = ">=2026.3.0"
+fsspec = ">=2026.3.0"
+netcdf4 = ">=1.7.4"
+python = ">=3.9,<3.14"
+squashfs-tools = ">=4.7.5"
+xarray = ">=2022.4.0"
+zarr = ">=2"
+
+[tool.pixi.pypi-dependencies]
+squashfspec = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+test = "python tests/test_driver.py"
+test-xarray = "python tests/test_xarray.py"
+
+[tool.pixi.feature.dev.dependencies]
+pytest = ">=9.0.3,<10"
+
+[tool.pixi.feature.dev.tasks]
+test = "python tests/test_driver.py"
+
+[tool.pixi.feature.py310.dependencies]
+python = "3.10.*"
+
+[tool.pixi.feature.py311.dependencies]
+python = "3.11.*"
+
+[tool.pixi.feature.py312.dependencies]
+python = "3.12.*"
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+py310 = { features = ["dev", "py310"], solve-group = "py310" }
+py311 = { features = ["dev", "py311"], solve-group = "py311" }
+py312 = { features = ["dev", "py312"], solve-group = "py312" }
 
 [tool.ruff]
 target-version = "py310"
