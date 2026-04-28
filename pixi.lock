@@ -8031,7 +8031,7 @@ packages:
 - pypi: .
   name: squashfsspec
   version: 0.1.0
-  sha256: 4669587b9a726184b6db0422a2c6de8061032fa7518ea3efd368be20d15fc00f
+  sha256: fa07639a544bf43ceac6efe25f20813be57396087cbf9a929772a652c13c3425
   requires_dist:
   - fsspec
   - zarr
