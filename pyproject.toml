@@ -48,11 +48,6 @@ zarr = ">=2"
 [tool.pixi.pypi-dependencies]
 squashfsspec = { path = ".", editable = true }
 
-[tool.pixi.tasks]
-test = "python tests/test_driver.py"
-test-xarray = "python tests/test_xarray.py"
-test-multi-zarr = "python tests/test_multi_zarr.py"
-
 [tool.pixi.feature.dev.dependencies]
 pytest = ">=9.0.3,<10"
 

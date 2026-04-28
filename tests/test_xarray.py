@@ -1,14 +1,16 @@
 import os
 import shutil
 import subprocess
-
+import pytest
 import numpy as np
 import xarray as xr
-
 from squashfsspec import SquashFSFileSystem
 
-
-def create_zarr_and_squash(zarr_path, squash_path):
+@pytest.fixture
+def squash_path(tmp_path):
+    zarr_path = tmp_path / "test_data.zarr"
+    squash_path = tmp_path / "test_xarray.squash"
+    
     # 1. Create a sample xarray dataset
     ds = xr.Dataset(
         {"foo": (("x", "y"), np.random.rand(4, 5))},
@@ -16,61 +18,38 @@ def create_zarr_and_squash(zarr_path, squash_path):
     )
 
     # 2. Save it to a Zarr store
-    if os.path.exists(zarr_path):
-        shutil.rmtree(zarr_path)
-    ds.to_zarr(zarr_path)
-    print(f"Created Zarr store at {zarr_path}")
+    ds.to_zarr(str(zarr_path))
 
     # 3. Squash it
     try:
-        subprocess.run(["mksquashfs", zarr_path, squash_path, "-noappend"], check=True)
-        print(f"Created SquashFS image at {squash_path}")
-        return True
+        subprocess.run(["mksquashfs", str(zarr_path), str(squash_path), "-noappend"], check=True, capture_output=True)
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
-        print(f"Error creating SquashFS: {e}")
-        return False
+        pytest.skip(f"mksquashfs not available or failed: {e}")
+        
+    return str(squash_path)
 
 
 def test_xarray_read(squash_path):
-    print(f"Testing xarray read from {squash_path}")
+    # Working approach for xarray with squashfsspec:
+    # Use a protocol-only URL and pass the squash file path via storage_options
+    url = "squash:///"
 
-    try:
-        # Working approach for xarray with squashfsspec:
-        # Use a protocol-only URL and pass the squash file path via storage_options
-        url = "squash:///"
-        print(f"Opening dataset with URL: {url}")
+    ds = xr.open_dataset(
+        url,
+        engine="zarr",
+        consolidated=False,
+        backend_kwargs={"storage_options": {"fo": squash_path}},
+    )
 
-        ds = xr.open_dataset(
-            url,
-            engine="zarr",
-            consolidated=False,
-            backend_kwargs={"storage_options": {"fo": squash_path}},
-        )
-
-        print("Dataset opened successfully!")
-        print(ds)
-
-        # Verify content
-        xr.testing.assert_allclose(ds, ds)
-        print("Data verification successful!")
-
-    except Exception as e:
-        print(f"Failed to read xarray dataset: {e}")
-        import traceback
-
-        traceback.print_exc()
-        raise e
+    # Verify content
+    xr.testing.assert_allclose(ds, ds)
 
 
-if __name__ == "__main__":
-    zarr_dir = "test_data.zarr"
-    squash_file = "test_xarray.squash"
-
-    try:
-        if create_zarr_and_squash(zarr_dir, squash_file):
-            test_xarray_read(squash_file)
-    finally:
-        if os.path.exists(zarr_dir):
-            shutil.rmtree(zarr_dir)
-        if os.path.exists(squash_file):
-            os.remove(squash_file)
+def test_xarray_read_chained(squash_path):
+    # If we squashed the CONTENT of the zarr dir, then it's at root.
+    ds = xr.open_dataset(
+        f"squash:///::{squash_path}",
+        engine="zarr",
+        consolidated=False,
+    )
+    assert "foo" in ds.variables
