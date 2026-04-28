@@ -4,7 +4,7 @@ import subprocess
 import numpy as np
 import xarray as xr
 import pytest
-from squashfspec import SquashFSFileSystem
+from squashfsspec import SquashFSFileSystem
 from fsspec import register_implementation
 
 def create_multi_zarr_squash(base_dir, squash_path):
