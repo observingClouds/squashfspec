@@ -24,8 +24,10 @@ dependencies = [
 optional-dependencies.dev = [
   "pytest",
 ]
-entry-points."fsspec.protocols".squash = "squashfspec:SquashFSFileSystem"
-entry-points."fsspec.protocols".squashedfs = "squashfspec:SquashFSFileSystem"
+
+[project.entry-points."fsspec.specs"]
+squash = "squashfspec:SquashFSFileSystem"
+squashedfs = "squashfspec:SquashFSFileSystem"
 
 [tool.setuptools]
 py-modules = [ "squashfspec" ]

@@ -50,7 +50,7 @@ import xarray as xr
 
 # Open a Zarr store inside a SquashFS file
 ds = xr.open_dataset(
-    "squashedfs:///",
+    "squash:///",
     engine="zarr",
     consolidated=False,  # Set to True if your Zarr store is consolidated
     backend_kwargs={
@@ -70,7 +70,7 @@ import xarray as xr
 
 # Open a specific dataset inside a SquashFS file containing multiple datasets
 ds = xr.open_dataset(
-    "squashedfs:///path/to/dataset.zarr",
+    "squash:///path/to/dataset.zarr",
     engine="zarr",
     consolidated=False,
     backend_kwargs={

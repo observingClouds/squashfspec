@@ -40,8 +40,6 @@ def create_multi_zarr_squash(base_dir, squash_path):
 def test_multi_zarr_read():
     base_dir = "test_multi_zarr"
     squash_file = "test_multi.squash"
-    
-    register_implementation("squashedfs", SquashFSFileSystem, clobber=True)
 
     try:
         if not create_multi_zarr_squash(base_dir, squash_file):
@@ -53,7 +51,7 @@ def test_multi_zarr_read():
         print(f"ds1.zarr contents: {fs.ls('ds1.zarr')}")
 
         # Test reading ds1.zarr
-        url1 = "squashedfs:///ds1.zarr"
+        url1 = "squash:///ds1.zarr"
         ds1_read = xr.open_dataset(
             url1,
             engine="zarr",
@@ -64,7 +62,7 @@ def test_multi_zarr_read():
         print("ds1.zarr read successfully from squashfs")
 
         # Test reading ds2.zarr
-        url2 = "squashedfs:///ds2.zarr"
+        url2 = "squash:///ds2.zarr"
         ds2_read = xr.open_dataset(
             url2,
             engine="zarr",

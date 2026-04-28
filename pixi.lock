@@ -8031,7 +8031,7 @@ packages:
 - pypi: .
   name: squashfspec
   version: 0.1.0
-  sha256: 01f209c514b87439b31990ce22ca765bfdbdb720b23544574bf6541980f4ab70
+  sha256: 547f2d3e2fc825f8462fc283d7518baaa8bf7a8fb4d1cb52469515f13a2a7faf
   requires_dist:
   - dissect-squashfs
   - fsspec
