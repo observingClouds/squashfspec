@@ -26,8 +26,7 @@ optional-dependencies.dev = [
 ]
 
 [project.entry-points."fsspec.specs"]
-squash = "squashfsspec:SquashFSFileSystem"
-squashedfs = "squashfsspec:SquashFSFileSystem"
+squashfs = "squashfsspec:SquashFSFileSystem"
 
 [tool.setuptools]
 py-modules = [ "squashfsspec" ]
