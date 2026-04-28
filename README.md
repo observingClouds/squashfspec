@@ -1,8 +1,13 @@
 # SquashFSSpec
 
-[![Tests](https://github.com/haukeschulz/squashfsspec/actions/workflows/test.yaml/badge.svg)](https://github.com/haukeschulz/squashfsspec/actions/workflows/test.yaml)
-[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
+<p align="center">
+  <img src="logo.jpeg" alt="SquashFSSpec Logo" width="300"/>
+</p>
+
+[![Tests](https://github.com/observingClouds/squashfsspec/actions/workflows/test.yaml/badge.svg)](https://github.com/haukeschulz/squashfsspec/actions/workflows/test.yaml)
+[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI](https://img.shields.io/pypi/v/squashfsspec)](https://pypi.org/project/squashfsspec/)
 
 A simple [fsspec](https://filesystem-spec.readthedocs.io/) driver for reading [SquashFS](https://en.wikipedia.org/wiki/SquashFS) files.
 
@@ -13,7 +18,7 @@ SquashFSSpec allows you to treat a SquashFS image as a filesystem, enabling seam
 You can install `squashfsspec` via pip from GitHub:
 
 ```bash
-pip install git+https://github.com/observingClouds/squashfsspec.git
+pip install squashfsspec
 ```
 
 Or using [pixi](https://pixi.sh/):
