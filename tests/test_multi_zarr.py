@@ -36,7 +36,7 @@ def multi_zarr_squash(tmp_path):
 
 def test_multi_zarr_read(multi_zarr_squash):
     # Test reading ds1.zarr
-    url1 = "squash:///ds1.zarr"
+    url1 = "squashfs:///ds1.zarr"
     ds1_read = xr.open_dataset(
         url1,
         engine="zarr",
@@ -46,7 +46,7 @@ def test_multi_zarr_read(multi_zarr_squash):
     assert "foo" in ds1_read.variables
 
     # Test reading ds2.zarr
-    url2 = "squash:///ds2.zarr"
+    url2 = "squashfs:///ds2.zarr"
     ds2_read = xr.open_dataset(
         url2,
         engine="zarr",

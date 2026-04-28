@@ -32,7 +32,7 @@ def squash_path(tmp_path):
 def test_xarray_read(squash_path):
     # Working approach for xarray with squashfsspec:
     # Use a protocol-only URL and pass the squash file path via storage_options
-    url = "squash:///"
+    url = "squashfs:///"
 
     ds = xr.open_dataset(
         url,
@@ -48,7 +48,7 @@ def test_xarray_read(squash_path):
 def test_xarray_read_chained(squash_path):
     # If we squashed the CONTENT of the zarr dir, then it's at root.
     ds = xr.open_dataset(
-        f"squash:///::{squash_path}",
+        f"squashfs:///::{squash_path}",
         engine="zarr",
         consolidated=False,
     )

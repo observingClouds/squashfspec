@@ -37,7 +37,7 @@ class SquashFSFileSystem(AbstractFileSystem):
 
         # If the protocol is still there, it's often because
         # fsspec's split_protocol didn't match it or it's nested.
-        for proto in ["squashedfs://", "squash://", "squashedfs:", "squash:"]:
+        for proto in ["squashfs://", "squashfs:"]:
             if path.startswith(proto):
                 path = path[len(proto) :]
                 break
