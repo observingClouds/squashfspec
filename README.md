@@ -70,12 +70,9 @@ import xarray as xr
 
 # Open a specific dataset inside a SquashFS file containing multiple datasets
 ds = xr.open_dataset(
-    "squashfs:///path/to/dataset.zarr",
+    "squashfs:///path/in/squashfs/file/to/dataset.zarr::/path/to/multidata.squash",
     engine="zarr",
     consolidated=False,
-    backend_kwargs={
-        "storage_options": {"fo": "path/to/multidata.squash"}
-    },
 )
 
 print(ds)
@@ -95,11 +92,7 @@ pixi install -e dev
 ### Running Tests
 
 ```bash
-# Run core driver tests
-pixi run test
-
-# Run xarray integration tests
-pixi run test-xarray
+pixi run -e dev pytest
 ```
 
 ## License
