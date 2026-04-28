@@ -1,0 +1,1 @@
+from squashfsspec.squashfsspec import *
