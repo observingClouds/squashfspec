@@ -6,15 +6,14 @@ requires = [ "setuptools>=61" ]
 name = "squashfsspec"
 version = "0.1.0"
 description = "A simple fsspec driver for SquashFS files"
-authors = [ { name = "Junie", email = "junie@jetbrains.com" } ]
 requires-python = ">=3.9,<3.14"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 dependencies = [ "fsspec", "zarr", "dissect-squashfs>=1.12,<2",
 ]
@@ -36,7 +35,7 @@ platforms = ["osx-64", "linux-64"]
 dask = ">=2026.3.0,<2027"
 fsspec = ">=2026.3.0,<2027"
 netcdf4 = ">=1.7.4,<2"
-python = ">=3.9,<3.14"
+python = ">=3.10,<3.15"
 squashfs-tools = ">=4.7.5,<5"
 xarray = ">=2025.6.1,<2027"
 zarr = ">=2.18.3,<4"
@@ -47,9 +46,6 @@ squashfsspec = { path = ".", editable = true }
 [tool.pixi.feature.dev.dependencies]
 pytest = ">=9.0.3,<10"
 
-[tool.pixi.feature.dev.tasks]
-test = "python tests/test_driver.py"
-
 [tool.pixi.feature.py310.dependencies]
 python = "3.10.*"
 
@@ -59,12 +55,20 @@ python = "3.11.*"
 [tool.pixi.feature.py312.dependencies]
 python = "3.12.*"
 
+[tool.pixi.feature.py313.dependencies]
+python = "3.13.*"
+
+[tool.pixi.feature.py314.dependencies]
+python = "3.14.*"
+
 [tool.pixi.environments]
 default = { solve-group = "default" }
 dev = { features = ["dev"], solve-group = "default" }
 py310 = { features = ["dev", "py310"], solve-group = "py310" }
 py311 = { features = ["dev", "py311"], solve-group = "py311" }
 py312 = { features = ["dev", "py312"], solve-group = "py312" }
+py313 = { features = ["dev", "py313"], solve-group = "py313" }
+py314 = { features = ["dev", "py314"], solve-group = "py314" }
 
 [tool.ruff]
 target-version = "py310"
