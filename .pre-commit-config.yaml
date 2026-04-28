@@ -34,16 +34,3 @@ repos:
         description: Lint Python code with Ruff
       - id: ruff-format
         description: Format Python code with Ruff
-
-  - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.21.1
-    hooks:
-      - id: pyproject-fmt
-        description: Normalize pyproject.toml formatting
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.0
-    hooks:
-    -   id: mypy
-        additional_dependencies: [types-PyYAML, types-Pillow, types-tqdm]
-        description: Check for type errors
