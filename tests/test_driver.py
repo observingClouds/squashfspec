@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-from squashfspec import SquashFSFileSystem
+from squashfsspec import SquashFSFileSystem
 
 
 def create_test_squashfs(filename):

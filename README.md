@@ -1,25 +1,25 @@
-# SquashFSpec
+# SquashFSSpec
 
-[![Tests](https://github.com/haukeschulz/squashfspec/actions/workflows/test.yaml/badge.svg)](https://github.com/haukeschulz/squashfspec/actions/workflows/test.yaml)
+[![Tests](https://github.com/haukeschulz/squashfsspec/actions/workflows/test.yaml/badge.svg)](https://github.com/haukeschulz/squashfsspec/actions/workflows/test.yaml)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A simple [fsspec](https://filesystem-spec.readthedocs.io/) driver for reading [SquashFS](https://en.wikipedia.org/wiki/SquashFS) files.
 
-SquashFSpec allows you to treat a SquashFS image as a filesystem, enabling seamless integration with tools like `xarray`, `dask`, and `zarr` without needing to mount the image.
+SquashFSSpec allows you to treat a SquashFS image as a filesystem, enabling seamless integration with tools like `xarray`, `dask`, and `zarr` without needing to mount the image.
 
 ## Installation
 
-You can install `squashfspec` via pip from GitHub:
+You can install `squashfsspec` via pip from GitHub:
 
 ```bash
-pip install git+https://github.com/observingClouds/squashfspec.git
+pip install git+https://github.com/observingClouds/squashfsspec.git
 ```
 
 Or using [pixi](https://pixi.sh/):
 
 ```bash
-pixi add squashfspec --git https://github.com/observingClouds/squashfspec.git
+pixi add squashfsspec --git https://github.com/observingClouds/squashfsspec.git
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ pixi add squashfspec --git https://github.com/observingClouds/squashfspec.git
 
 ```python
 import fsspec
-from squashfspec import SquashFSFileSystem
+from squashfsspec import SquashFSFileSystem
 
 # Open a SquashFS file
 fs = fsspec.filesystem("squash", fo="path/to/your.squash")
