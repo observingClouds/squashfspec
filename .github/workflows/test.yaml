@@ -26,6 +26,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pixi run -e py${{ matrix.python-version }} test
-          pixi run -e py${{ matrix.python-version }} test-xarray
-          pixi run -e py${{ matrix.python-version }} test-multi-zarr
+          pixi run -e py${{ matrix.python-version }} pytest

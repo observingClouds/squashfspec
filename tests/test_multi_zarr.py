@@ -5,9 +5,13 @@ import numpy as np
 import xarray as xr
 import pytest
 from squashfsspec import SquashFSFileSystem
-from fsspec import register_implementation
 
-def create_multi_zarr_squash(base_dir, squash_path):
+@pytest.fixture
+def multi_zarr_squash(tmp_path):
+    base_dir = tmp_path / "data"
+    base_dir.mkdir()
+    squash_path = tmp_path / "test_multi.squash"
+    
     # 1. Create multiple sample xarray datasets
     ds1 = xr.Dataset(
         {"foo": (("x", "y"), np.random.rand(4, 5))},
@@ -18,65 +22,35 @@ def create_multi_zarr_squash(base_dir, squash_path):
         coords={"a": [1, 2, 3], "b": [1, 2, 3]},
     )
 
-    if os.path.exists(base_dir):
-        shutil.rmtree(base_dir)
-    os.makedirs(base_dir)
-
     # 2. Save them to Zarr stores in subdirectories
-    ds1.to_zarr(os.path.join(base_dir, "ds1.zarr"), zarr_format=2)
-    ds2.to_zarr(os.path.join(base_dir, "ds2.zarr"), zarr_format=2)
+    ds1.to_zarr(str(base_dir / "ds1.zarr"), zarr_format=2)
+    ds2.to_zarr(str(base_dir / "ds2.zarr"), zarr_format=2)
     
-    print(f"Created multiple Zarr stores in {base_dir}")
-
     # 3. Squash the entire directory
     try:
-        subprocess.run(["mksquashfs", base_dir, squash_path, "-noappend"], check=True)
-        print(f"Created SquashFS image at {squash_path}")
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError) as e:
-        print(f"Error creating SquashFS: {e}")
-        return False
+        subprocess.run(["mksquashfs", str(base_dir), str(squash_path), "-noappend"], check=True, capture_output=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pytest.skip("mksquashfs not available")
+        
+    return str(squash_path)
 
-def test_multi_zarr_read():
-    base_dir = "test_multi_zarr"
-    squash_file = "test_multi.squash"
+def test_multi_zarr_read(multi_zarr_squash):
+    # Test reading ds1.zarr
+    url1 = "squash:///ds1.zarr"
+    ds1_read = xr.open_dataset(
+        url1,
+        engine="zarr",
+        consolidated=True,
+        backend_kwargs={"storage_options": {"fo": multi_zarr_squash}},
+    )
+    assert "foo" in ds1_read.variables
 
-    try:
-        if not create_multi_zarr_squash(base_dir, squash_file):
-            pytest.skip("mksquashfs not available")
-
-        # Inspect root
-        fs = SquashFSFileSystem(squash_file)
-        print(f"Root contents: {fs.ls('')}")
-        print(f"ds1.zarr contents: {fs.ls('ds1.zarr')}")
-
-        # Test reading ds1.zarr
-        url1 = "squash:///ds1.zarr"
-        ds1_read = xr.open_dataset(
-            url1,
-            engine="zarr",
-            consolidated=True,
-            backend_kwargs={"storage_options": {"fo": squash_file}},
-        )
-        assert "foo" in ds1_read.variables
-        print("ds1.zarr read successfully from squashfs")
-
-        # Test reading ds2.zarr
-        url2 = "squash:///ds2.zarr"
-        ds2_read = xr.open_dataset(
-            url2,
-            engine="zarr",
-            consolidated=True,
-            backend_kwargs={"storage_options": {"fo": squash_file}},
-        )
-        assert "bar" in ds2_read.variables
-        print("ds2.zarr read successfully from squashfs")
-
-    finally:
-        if os.path.exists(base_dir):
-            shutil.rmtree(base_dir)
-        if os.path.exists(squash_file):
-            os.remove(squash_file)
-
-if __name__ == "__main__":
-    test_multi_zarr_read()
+    # Test reading ds2.zarr
+    url2 = "squash:///ds2.zarr"
+    ds2_read = xr.open_dataset(
+        url2,
+        engine="zarr",
+        consolidated=True,
+        backend_kwargs={"storage_options": {"fo": multi_zarr_squash}},
+    )
+    assert "bar" in ds2_read.variables
