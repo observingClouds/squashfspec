@@ -23,6 +23,7 @@ jobs:
         with:
           run-install: true
           environments: py${{ matrix.python-version }}
+          frozen: true
 
       - name: Run tests
         run: |
