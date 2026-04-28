@@ -16,10 +16,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
-dependencies = [
-  "dissect-squashfs",
-  "fsspec",
-  "zarr",
+dependencies = [ "fsspec", "zarr", "dissect-squashfs>=1.12,<2",
 ]
 optional-dependencies.dev = [
   "pytest",
@@ -36,13 +33,13 @@ channels = ["conda-forge"]
 platforms = ["osx-64", "linux-64"]
 
 [tool.pixi.dependencies]
-dask = ">=2026.3.0"
-fsspec = ">=2026.3.0"
-netcdf4 = ">=1.7.4"
+dask = ">=2026.3.0,<2027"
+fsspec = ">=2026.3.0,<2027"
+netcdf4 = ">=1.7.4,<2"
 python = ">=3.9,<3.14"
-squashfs-tools = ">=4.7.5"
-xarray = ">=2022.4.0"
-zarr = ">=2"
+squashfs-tools = ">=4.7.5,<5"
+xarray = ">=2025.6.1,<2027"
+zarr = ">=2.18.3,<4"
 
 [tool.pixi.pypi-dependencies]
 squashfsspec = { path = ".", editable = true }
