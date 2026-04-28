@@ -34,16 +34,10 @@ def create_zarr_and_squash(zarr_path, squash_path):
 def test_xarray_read(squash_path):
     print(f"Testing xarray read from {squash_path}")
 
-    # We registered the protocol in pyproject.toml as 'squash' and 'squashedfs'
-    # However, for testing without re-installing the package, we can also register it manually
-    from fsspec import register_implementation
-
-    register_implementation("squashedfs", SquashFSFileSystem, clobber=True)
-
     try:
         # Working approach for xarray with squashfspec:
         # Use a protocol-only URL and pass the squash file path via storage_options
-        url = "squashedfs:///"
+        url = "squash:///"
         print(f"Opening dataset with URL: {url}")
 
         ds = xr.open_dataset(
