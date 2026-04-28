@@ -8031,11 +8031,11 @@ packages:
 - pypi: .
   name: squashfsspec
   version: 0.1.0
-  sha256: e25dfcd41f7e305148a07414f13737791735f03123fb5830efc9e4f4abed4204
+  sha256: 4669587b9a726184b6db0422a2c6de8061032fa7518ea3efd368be20d15fc00f
   requires_dist:
-  - dissect-squashfs
   - fsspec
   - zarr
+  - dissect-squashfs>=1.12,<2
   - pytest ; extra == 'dev'
   requires_python: '>=3.9,<3.14'
   editable: true
