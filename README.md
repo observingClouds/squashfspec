@@ -33,7 +33,6 @@ pixi add squashfsspec --git https://github.com/observingClouds/squashfsspec.git
 
 ```python
 import fsspec
-from squashfsspec import SquashFSFileSystem
 
 squashfs_path = "path/to/your.squash"
 
