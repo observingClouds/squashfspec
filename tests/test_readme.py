@@ -29,7 +29,8 @@ def _get_code_block(readme: pathlib.Path, pattern: str) -> str:
 
 @pytest.fixture
 def squashfs_file(tmp_path):
-    """SquashFS file with a nested text file for the README basic usage example."""
+    """SquashFS file with a nested text file for the README basic usage
+    example."""
     test_dir = tmp_path / "test_dir"
     test_dir.mkdir()
     (test_dir / "some").mkdir()
@@ -74,7 +75,8 @@ def zarr_squashfs_file(tmp_path):
 
 @pytest.fixture
 def multi_zarr_squashfs_file(tmp_path):
-    """SquashFS file with multiple Zarr v2 stores for the README multiple datasets example."""
+    """SquashFS file with multiple Zarr v2 stores for the README multiple
+    datasets example."""
     base_dir = tmp_path / "data"
     base_dir.mkdir()
     squash_path = tmp_path / "multidata.squash"
@@ -88,7 +90,8 @@ def multi_zarr_squashfs_file(tmp_path):
         coords={"a": [1, 2, 3], "b": [1, 2, 3]},
     )
 
-    # Zarr v2 writes consolidated metadata (.zmetadata) required by consolidated=True.
+    # Zarr v2 writes consolidated metadata (.zmetadata) required by
+    # consolidated=True.
     ds1.to_zarr(str(base_dir / "dataset1.zarr"), zarr_format=2)
     ds2.to_zarr(str(base_dir / "dataset2.zarr"), zarr_format=2)
 
@@ -105,7 +108,8 @@ def multi_zarr_squashfs_file(tmp_path):
 
 
 def test_readme_basic_usage(squashfs_file):
-    """README: Basic Usage with fsspec — code extracted directly from README.md."""
+    """README: Basic Usage with fsspec — code extracted directly from
+    README.md."""
     code = _get_code_block(README, 'fsspec.filesystem("squashfs"')
     code = code.replace('"path/to/your.squash"', repr(squashfs_file))
     ns: dict = {}
@@ -114,7 +118,8 @@ def test_readme_basic_usage(squashfs_file):
 
 
 def test_readme_xarray_zarr(zarr_squashfs_file):
-    """README: Working with Xarray and Zarr — code extracted directly from README.md."""
+    """README: Working with Xarray and Zarr — code extracted directly from
+    README.md."""
     code = _get_code_block(README, '"squashfs:///"')
     code = code.replace('"path/to/data.squash"', repr(zarr_squashfs_file))
     ns: dict = {}
@@ -123,7 +128,8 @@ def test_readme_xarray_zarr(zarr_squashfs_file):
 
 
 def test_readme_multiple_datasets(multi_zarr_squashfs_file):
-    """README: Accessing Multiple Datasets — code extracted directly from README.md."""
+    """README: Accessing Multiple Datasets — code extracted directly from
+    README.md."""
     code = _get_code_block(README, "dataset_path}::{squashfs_path}")
     code = code.replace(
         '"path/to/multidata.squash"', repr(multi_zarr_squashfs_file)
