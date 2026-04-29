@@ -8,7 +8,6 @@ import pytest
 import xarray as xr
 
 # First-party
-from squashfsspec import SquashFSFileSystem
 
 
 @pytest.fixture
@@ -116,9 +115,7 @@ def test_readme_xarray_zarr(zarr_squashfs_file):
         "squashfs:///",
         engine="zarr",
         consolidated=False,
-        backend_kwargs={
-            "storage_options": {"fo": zarr_squashfs_file}
-        },
+        backend_kwargs={"storage_options": {"fo": zarr_squashfs_file}},
     )
 
     assert "temperature" in ds.variables
