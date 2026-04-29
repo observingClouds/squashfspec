@@ -1,14 +1,30 @@
 # Standard library
+import pathlib
+import re
 import subprocess
 
 # Third-party
-import fsspec
 import numpy as np
 import pytest
 import xarray as xr
 
-# First-party
-from squashfsspec import SquashFSFileSystem  # noqa: F401 (registers "squashfs" protocol)
+README = pathlib.Path(__file__).parent.parent / "README.md"
+
+
+def _get_code_block(readme: pathlib.Path, pattern: str) -> str:
+    """Return the first Python code block in *readme* that contains *pattern*.
+
+    Raises a pytest failure if no matching block is found so that a missing or
+    renamed example in the README surfaces as an explicit test error.
+    """
+    blocks = re.findall(r"```python\n(.*?)```", readme.read_text(), re.DOTALL)
+    try:
+        return next(b for b in blocks if pattern in b)
+    except StopIteration:
+        pytest.fail(
+            f"No Python code block matching {pattern!r} found in {readme}. "
+            "The README example may have been removed or renamed."
+        )
 
 
 @pytest.fixture
@@ -89,44 +105,28 @@ def multi_zarr_squashfs_file(tmp_path):
 
 
 def test_readme_basic_usage(squashfs_file):
-    """README: Basic Usage with fsspec."""
-    # Open a SquashFS file
-    fs = fsspec.filesystem("squashfs", fo=squashfs_file)
-
-    # List files
-    print(fs.ls("/"))
-
-    # Open and read a file
-    with fs.open("some/file.txt", "rb") as f:
-        print(f.read().decode())
-
-    assert fs.exists("some/file.txt")
+    """README: Basic Usage with fsspec — code extracted directly from README.md."""
+    code = _get_code_block(README, 'fsspec.filesystem("squashfs"')
+    code = code.replace('"path/to/your.squash"', repr(squashfs_file))
+    ns: dict = {}
+    exec(code, ns)  # noqa: S102
+    assert ns["fs"].exists("some/file.txt")
 
 
 def test_readme_xarray_zarr(zarr_squashfs_file):
-    """README: Working with Xarray and Zarr."""
-    # Open a Zarr store inside a SquashFS file
-    ds = xr.open_dataset(
-        "squashfs:///",
-        engine="zarr",
-        consolidated=False,  # Set to True if your Zarr store is consolidated
-        backend_kwargs={
-            "storage_options": {"fo": zarr_squashfs_file}
-        },
-    )
-
-    print(ds)
-    assert "temperature" in ds.variables
+    """README: Working with Xarray and Zarr — code extracted directly from README.md."""
+    code = _get_code_block(README, '"squashfs:///"')
+    code = code.replace('"path/to/data.squash"', repr(zarr_squashfs_file))
+    ns: dict = {}
+    exec(code, ns)  # noqa: S102
+    assert "temperature" in ns["ds"].variables
 
 
 def test_readme_multiple_datasets(multi_zarr_squashfs_file):
-    """README: Accessing Multiple Datasets."""
-    # Open a specific dataset inside a SquashFS file containing multiple datasets
-    ds = xr.open_dataset(
-        f"squashfs:///dataset1.zarr::{multi_zarr_squashfs_file}",
-        engine="zarr",
-        consolidated=True,
-    )
-
-    print(ds)
-    assert "temperature" in ds.variables
+    """README: Accessing Multiple Datasets — code extracted directly from README.md."""
+    code = _get_code_block(README, "dataset_path}::{squashfs_path}")
+    code = code.replace('"path/to/multidata.squash"', repr(multi_zarr_squashfs_file))
+    code = code.replace('"path/in/squashfs/file/to/dataset.zarr"', '"dataset1.zarr"')
+    ns: dict = {}
+    exec(code, ns)  # noqa: S102
+    assert "temperature" in ns["ds"].variables
