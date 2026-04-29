@@ -125,8 +125,12 @@ def test_readme_xarray_zarr(zarr_squashfs_file):
 def test_readme_multiple_datasets(multi_zarr_squashfs_file):
     """README: Accessing Multiple Datasets — code extracted directly from README.md."""
     code = _get_code_block(README, "dataset_path}::{squashfs_path}")
-    code = code.replace('"path/to/multidata.squash"', repr(multi_zarr_squashfs_file))
-    code = code.replace('"path/in/squashfs/file/to/dataset.zarr"', '"dataset1.zarr"')
+    code = code.replace(
+        '"path/to/multidata.squash"', repr(multi_zarr_squashfs_file)
+    )
+    code = code.replace(
+        '"path/in/squashfs/file/to/dataset.zarr"', '"dataset1.zarr"'
+    )
     ns: dict = {}
     exec(code, ns)  # noqa: S102
     assert "temperature" in ns["ds"].variables
