@@ -35,8 +35,10 @@ pixi add squashfsspec --git https://github.com/observingClouds/squashfsspec.git
 import fsspec
 from squashfsspec import SquashFSFileSystem
 
+squashfs_path = "path/to/your.squash"
+
 # Open a SquashFS file
-fs = fsspec.filesystem("squash", fo="path/to/your.squash")
+fs = fsspec.filesystem("squashfs", fo=squashfs_path)
 
 # List files
 print(fs.ls("/"))
@@ -53,13 +55,15 @@ If you have a Zarr store inside a SquashFS image, you can open it directly with 
 ```python
 import xarray as xr
 
+squashfs_path = "path/to/data.squash"
+
 # Open a Zarr store inside a SquashFS file
 ds = xr.open_dataset(
     "squashfs:///",
     engine="zarr",
     consolidated=False,  # Set to True if your Zarr store is consolidated
     backend_kwargs={
-        "storage_options": {"fo": "path/to/data.squash"}
+        "storage_options": {"fo": squashfs_path}
     },
 )
 
@@ -73,11 +77,14 @@ If your SquashFS image contains multiple Zarr stores or datasets, you can access
 ```python
 import xarray as xr
 
+squashfs_path = "path/to/multidata.squash"
+dataset_path = "path/in/squashfs/file/to/dataset.zarr"
+
 # Open a specific dataset inside a SquashFS file containing multiple datasets
 ds = xr.open_dataset(
-    "squashfs:///path/in/squashfs/file/to/dataset.zarr::/path/to/multidata.squash",
+    f"squashfs:///{dataset_path}::{squashfs_path}",
     engine="zarr",
-    consolidated=False,
+    consolidated=True,
 )
 
 print(ds)
