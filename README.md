@@ -36,7 +36,7 @@ import fsspec
 from squashfsspec import SquashFSFileSystem
 
 # Open a SquashFS file
-fs = fsspec.filesystem("squash", fo="path/to/your.squash")
+fs = fsspec.filesystem("squashfs", fo="path/to/your.squash")
 
 # List files
 print(fs.ls("/"))
@@ -77,7 +77,7 @@ import xarray as xr
 ds = xr.open_dataset(
     "squashfs:///path/in/squashfs/file/to/dataset.zarr::/path/to/multidata.squash",
     engine="zarr",
-    consolidated=False,
+    consolidated=True,
 )
 
 print(ds)
