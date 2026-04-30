@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Unreleased
+
+### Enhancements
+
+- Add `__del__` and context manager (`__enter__`/`__exit__`) support to `SquashFSFileSystem` to ensure `fo` is properly closed on garbage collection and when used in a `with` statement ([#19](https://github.com/observingClouds/squashfsspec/pull/19))
+
 ## v0.1.1 (2026-04-29)
 
 ### Tests
