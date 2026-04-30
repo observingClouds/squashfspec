@@ -119,6 +119,10 @@ class SquashFSFileSystem(AbstractFileSystem):
         except Exception:
             return False
 
+    def __del__(self):
+        if hasattr(self, "fo"):
+            self.fo.close()
+
     def _open(self, path, mode="rb", **kwargs):
         if mode != "rb":
             raise ValueError("ReadOnly filesystem")
