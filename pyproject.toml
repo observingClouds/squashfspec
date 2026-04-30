@@ -62,9 +62,14 @@ python = "3.13.*"
 [tool.pixi.feature.py314.dependencies]
 python = "3.14.*"
 
+[tool.pixi.feature.grib.dependencies]
+cfgrib = ">=0.9,<1"
+pooch = ">=1,<2"
+
 [tool.pixi.environments]
 default = { solve-group = "default" }
 dev = { features = ["dev"], solve-group = "default" }
+grib = { features = ["dev", "grib"], solve-group = "default" }
 py310 = { features = ["dev", "py310"], solve-group = "py310" }
 py311 = { features = ["dev", "py311"], solve-group = "py311" }
 py312 = { features = ["dev", "py312"], solve-group = "py312" }
