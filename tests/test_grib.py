@@ -49,21 +49,12 @@ def grib_squash(tmp_path, grib_source_file):
     return str(squash_path)
 
 
-def test_grib_read(grib_squash, tmp_path):
+def test_grib_read(grib_squash):
     """Read a GRIB file stored in squashfs using xarray with cfgrib engine."""
-    # First-party
-    from squashfsspec import SquashFSFileSystem
-
-    fs = SquashFSFileSystem(grib_squash)
-
-    assert fs.exists(GRIB_FILENAME)
-
-    # cfgrib/eccodes requires a local file path; extract the GRIB bytes from
-    # squashfs and write them to a temporary file before opening with xarray.
-    local_grib = tmp_path / GRIB_FILENAME
-    fs.get(GRIB_FILENAME, str(local_grib))
-
-    ds = xr.open_dataset(str(local_grib), engine="cfgrib")
+    ds = xr.open_dataset(
+        f"squashfs:///{GRIB_FILENAME}::{grib_squash}",
+        engine="cfgrib",
+    )
 
     assert ds is not None
     assert len(ds.data_vars) > 0
