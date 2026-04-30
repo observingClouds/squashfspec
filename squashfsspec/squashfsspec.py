@@ -123,6 +123,12 @@ class SquashFSFileSystem(AbstractFileSystem):
         if hasattr(self, "fo") and not self.fo.closed:
             self.fo.close()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.fo.close()
+
     def _open(self, path, mode="rb", **kwargs):
         if mode != "rb":
             raise ValueError("ReadOnly filesystem")
