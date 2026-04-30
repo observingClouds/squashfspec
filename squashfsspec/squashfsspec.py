@@ -8,6 +8,17 @@ from fsspec.spec import AbstractFileSystem
 
 
 class SquashFSFileSystem(AbstractFileSystem):
+    """Read-only fsspec filesystem for browsing SquashFS archives.
+
+    Inputs:
+    - fo: path or file-like object pointing to a SquashFS image.
+    - offset: byte offset into ``fo`` where the SquashFS image starts.
+
+    Outputs:
+    - Standard fsspec directory listings and file-like readers for archive
+      members.
+    """
+
     protocol = "squashfs"
     cachable = False  # codespell:ignore cachable
 
@@ -41,6 +52,8 @@ class SquashFSFileSystem(AbstractFileSystem):
 
     @property
     def closed(self):
+        """Return whether this filesystem should be treated as closed.
+        Checks both internal state and underlying file-like object."""
         return self._closed or bool(getattr(self.fo, "closed", False))
 
     def _check_closed(self):
@@ -49,6 +62,14 @@ class SquashFSFileSystem(AbstractFileSystem):
 
     @classmethod
     def _strip_protocol(cls, path):
+        """Normalize paths to absolute archive-internal paths.
+
+        Input:
+        - path: string path that may include protocol prefixes.
+
+        Output:
+        - Path string rooted at ``/`` within the SquashFS image.
+        """
         path = super()._strip_protocol(path)
 
         # If the protocol is still there, it's often because
@@ -67,6 +88,15 @@ class SquashFSFileSystem(AbstractFileSystem):
         return path
 
     def ls(self, path, detail=True, **kwargs):
+        """List members at ``path``.
+
+        Input:
+        - path: archive-internal directory or file path.
+        - detail: if True return info dicts, else return names.
+
+        Output:
+        - ``list[dict]`` when ``detail=True`` else ``list[str]``.
+        """
         self._check_closed()
         path = self._strip_protocol(path)
 
@@ -102,6 +132,14 @@ class SquashFSFileSystem(AbstractFileSystem):
             return [path.lstrip("/")]
 
     def info(self, path, **kwargs):
+        """Return metadata for one archive member.
+
+        Input:
+        - path: archive-internal path.
+
+        Output:
+        - Dict with ``name``, ``size``, and ``type``.
+        """
         self._check_closed()
         path = self._strip_protocol(path)
         try:
@@ -141,6 +179,15 @@ class SquashFSFileSystem(AbstractFileSystem):
             return False
 
     def _open(self, path, mode="rb", **kwargs):
+        """Open an archive member for binary reading.
+
+        Input:
+        - path: archive-internal file path.
+        - mode: must be ``rb``.
+
+        Output:
+        - File-like object for reading bytes.
+        """
         self._check_closed()
         if mode != "rb":
             raise ValueError("ReadOnly filesystem")
@@ -149,6 +196,7 @@ class SquashFSFileSystem(AbstractFileSystem):
         return _MemberFileProxy(entry.open())
 
     def close(self):
+        """Close filesystem resources and owned archive handle."""
         if self._closed:
             return
         self._closed = True
@@ -170,7 +218,10 @@ class SquashFSFileSystem(AbstractFileSystem):
 
 
 class _MemberFileProxy(io.IOBase):
-    """Minimal logical stream wrapper with real close semantics."""
+    """Minimal logical stream wrapper with real close semantics.
+    Needed to enable closing a subfile stream without closing the entire
+    SquashFS file-like object.
+    """
 
     def __init__(self, raw):
         self._raw = raw
@@ -205,6 +256,7 @@ class _MemberFileProxy(io.IOBase):
         return self._raw.tell()
 
     def close(self):
+        """Close the member stream and mark this wrapper as closed."""
         if self.closed:
             return
         try:
@@ -217,6 +269,17 @@ class _MemberFileProxy(io.IOBase):
 
 
 class OffsetWrapper:
+    """File-like view that applies a fixed base offset to absolute seeks.
+
+    Input:
+    - fo: underlying file-like object.
+    - offset: base byte offset for whence=0 seeks.
+
+    Output:
+    - File-like object suitable for libraries expecting an offset-adjusted
+      stream.
+    """
+
     def __init__(self, fo, offset):
         self.fo = fo
         self.offset = offset
