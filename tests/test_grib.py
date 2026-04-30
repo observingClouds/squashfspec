@@ -1,8 +1,10 @@
 # Standard library
+import io
 import shutil
 import subprocess
 
 # Third-party
+import fsspec
 import pytest
 import xarray as xr
 
@@ -51,10 +53,11 @@ def grib_squash(tmp_path, grib_source_file):
 
 def test_grib_read(grib_squash):
     """Read a GRIB file stored in squashfs using xarray with cfgrib engine."""
-    ds = xr.open_dataset(
-        f"squashfs:///{GRIB_FILENAME}::{grib_squash}",
-        engine="cfgrib",
-    )
+    url = f"squashfs:///{GRIB_FILENAME}::{grib_squash}"
+    with fsspec.open(url, "rb") as f:
+        data = f.read()
+
+    ds = xr.open_dataset(io.BytesIO(data), engine="cfgrib", indexpath="")
 
     assert ds is not None
     assert len(ds.data_vars) > 0
