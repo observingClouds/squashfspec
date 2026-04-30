@@ -8,7 +8,7 @@ from fsspec.spec import AbstractFileSystem
 
 
 class SquashFSFileSystem(AbstractFileSystem):
-    protocol = "squash"
+    protocol = "squashfs"
     cachable = False
 
     def __init__(self, fo=None, offset=0, **kwargs):
