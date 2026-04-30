@@ -1,5 +1,4 @@
 # Standard library
-import io
 import shutil
 import subprocess
 
@@ -51,13 +50,16 @@ def grib_squash(tmp_path, grib_source_file):
     return str(squash_path)
 
 
-def test_grib_read(grib_squash):
+def test_grib_read(grib_squash, tmp_path):
     """Read a GRIB file stored in squashfs using xarray with cfgrib engine."""
     url = f"squashfs:///{GRIB_FILENAME}::{grib_squash}"
     with fsspec.open(url, "rb") as f:
         data = f.read()
 
-    ds = xr.open_dataset(io.BytesIO(data), engine="cfgrib", indexpath="")
+    tmp_grib = tmp_path / GRIB_FILENAME
+    tmp_grib.write_bytes(data)
+
+    ds = xr.open_dataset(str(tmp_grib), engine="cfgrib", indexpath="")
 
     assert ds is not None
     assert len(ds.data_vars) > 0
