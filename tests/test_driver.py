@@ -64,7 +64,7 @@ def test_close_semantics(squashfs_file):
     f.close()
     assert f.closed
     assert not fs.fo.closed
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="I/O operation on closed file\\."):
         f.read(1)
 
     with fs.open("file1.txt", "rb") as g:
@@ -77,7 +77,9 @@ def test_close_semantics(squashfs_file):
     fs.close()
     assert fs.closed
     assert fs.fo.closed
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="I/O operation on closed filesystem\\."
+    ):
         fs.open("file1.txt", "rb")
 
 

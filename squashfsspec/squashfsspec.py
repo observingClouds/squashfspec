@@ -166,10 +166,7 @@ class SquashFSFileSystem(AbstractFileSystem):
         self.close()
 
     def __del__(self):
-        try:
-            self.close()
-        except Exception:
-            pass
+        self.close()
 
 
 class _MemberFileProxy(io.IOBase):
