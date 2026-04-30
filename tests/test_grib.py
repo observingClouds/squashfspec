@@ -50,7 +50,7 @@ def grib_squash(tmp_path, grib_source_file):
     return str(squash_path)
 
 
-def test_grib_read(grib_squash, tmp_path):
+def test_grib_read(grib_squash, grib_source_file, tmp_path):
     """Read a GRIB file stored in squashfs using xarray with cfgrib engine."""
     url = f"squashfs:///{GRIB_FILENAME}::{grib_squash}"
     with fsspec.open(url, "rb") as f:
@@ -59,7 +59,7 @@ def test_grib_read(grib_squash, tmp_path):
     tmp_grib = tmp_path / GRIB_FILENAME
     tmp_grib.write_bytes(data)
 
-    ds = xr.open_dataset(str(tmp_grib), engine="cfgrib", indexpath="")
+    ds_squash = xr.open_dataset(str(tmp_grib), engine="cfgrib", indexpath="")
+    ds_direct = xr.open_dataset(grib_source_file, engine="cfgrib", indexpath="")
 
-    assert ds is not None
-    assert len(ds.data_vars) > 0
+    xr.testing.assert_identical(ds_squash, ds_direct)
