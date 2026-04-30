@@ -33,9 +33,13 @@ def squashfs_file(tmp_path):
 
 
 def test_del_closes_fo(squashfs_file):
+    # Standard library
+    import gc
+
     fs = SquashFSFileSystem(squashfs_file, skip_instance_cache=True)
     fo = fs.fo
     del fs
+    gc.collect()
     assert fo.closed
 
 

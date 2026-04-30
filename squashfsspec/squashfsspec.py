@@ -120,7 +120,7 @@ class SquashFSFileSystem(AbstractFileSystem):
             return False
 
     def __del__(self):
-        if hasattr(self, "fo"):
+        if hasattr(self, "fo") and not self.fo.closed:
             self.fo.close()
 
     def _open(self, path, mode="rb", **kwargs):
