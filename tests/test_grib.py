@@ -51,7 +51,7 @@ def grib_squash(tmp_path, grib_source_file):
 
 def test_grib_read(grib_squash, tmp_path):
     """Read a GRIB file stored in squashfs using xarray with cfgrib engine."""
-    # Third-party
+    # First-party
     from squashfsspec import SquashFSFileSystem
 
     fs = SquashFSFileSystem(grib_squash)
