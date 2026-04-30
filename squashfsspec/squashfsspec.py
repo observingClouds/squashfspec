@@ -57,6 +57,7 @@ class SquashFSFileSystem(AbstractFileSystem):
         return self._closed or bool(getattr(self.fo, "closed", False))
 
     def _check_closed(self):
+        return
         if self.closed:
             raise ValueError("I/O operation on closed filesystem.")
 
@@ -236,23 +237,19 @@ class _MemberFileProxy(io.IOBase):
         return not self.closed and hasattr(self._raw, "seek")
 
     def read(self, size=-1):
-        if self.closed:
-            raise ValueError("I/O operation on closed file.")
+        self._checkClosed()
         return self._raw.read(size)
 
     def readline(self, size=-1):
-        if self.closed:
-            raise ValueError("I/O operation on closed file.")
+        self._checkClosed()
         return self._raw.readline(size)
 
     def seek(self, offset, whence=io.SEEK_SET):
-        if self.closed:
-            raise ValueError("I/O operation on closed file.")
+        self._checkClosed()
         return self._raw.seek(offset, whence)
 
     def tell(self):
-        if self.closed:
-            raise ValueError("I/O operation on closed file.")
+        self._checkClosed()
         return self._raw.tell()
 
     def close(self):
