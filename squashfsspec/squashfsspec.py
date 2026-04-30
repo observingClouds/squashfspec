@@ -1,3 +1,6 @@
+# Standard library
+import io
+
 # Third-party
 import fsspec
 from dissect.squashfs import SquashFS
@@ -6,6 +9,7 @@ from fsspec.spec import AbstractFileSystem
 
 class SquashFSFileSystem(AbstractFileSystem):
     protocol = "squash"
+    cachable = False
 
     def __init__(self, fo=None, offset=0, **kwargs):
         super().__init__(**kwargs)
@@ -18,10 +22,13 @@ class SquashFSFileSystem(AbstractFileSystem):
                 "SquashFSFileSystem requires 'fo' (file-like object or path)"
             )
 
+        self._close_fo = isinstance(fo, str)
         if isinstance(fo, str):
-            self.fo = fsspec.open(fo, "rb").open()
+            self._fo_ref = fsspec.open(fo, "rb")
+            self.fo = self._fo_ref.open()
         else:
             self.fo = fo
+            self._fo_ref = None
         self.offset = offset
         # SquashFS in dissect can take a file-like object
         # We might need to wrap it if it has an offset
@@ -30,6 +37,15 @@ class SquashFSFileSystem(AbstractFileSystem):
             self.sfs = SquashFS(OffsetWrapper(self.fo, self.offset))
         else:
             self.sfs = SquashFS(self.fo)
+        self._closed = False
+
+    @property
+    def closed(self):
+        return self._closed or bool(getattr(self.fo, "closed", False))
+
+    def _check_closed(self):
+        if self.closed:
+            raise ValueError("I/O operation on closed filesystem.")
 
     @classmethod
     def _strip_protocol(cls, path):
@@ -51,6 +67,7 @@ class SquashFSFileSystem(AbstractFileSystem):
         return path
 
     def ls(self, path, detail=True, **kwargs):
+        self._check_closed()
         path = self._strip_protocol(path)
 
         try:
@@ -85,6 +102,7 @@ class SquashFSFileSystem(AbstractFileSystem):
             return [path.lstrip("/")]
 
     def info(self, path, **kwargs):
+        self._check_closed()
         path = self._strip_protocol(path)
         try:
             entry = self.sfs.get(path)
@@ -98,6 +116,7 @@ class SquashFSFileSystem(AbstractFileSystem):
         }
 
     def exists(self, path, **kwargs):
+        self._check_closed()
         path = self._strip_protocol(path)
         try:
             self.sfs.get(path)
@@ -106,6 +125,7 @@ class SquashFSFileSystem(AbstractFileSystem):
             return False
 
     def isdir(self, path):
+        self._check_closed()
         path = self._strip_protocol(path)
         try:
             return self.sfs.get(path).is_dir()
@@ -113,6 +133,7 @@ class SquashFSFileSystem(AbstractFileSystem):
             return False
 
     def isfile(self, path):
+        self._check_closed()
         path = self._strip_protocol(path)
         try:
             return not self.sfs.get(path).is_dir()
@@ -120,11 +141,82 @@ class SquashFSFileSystem(AbstractFileSystem):
             return False
 
     def _open(self, path, mode="rb", **kwargs):
+        self._check_closed()
         if mode != "rb":
             raise ValueError("ReadOnly filesystem")
         path = self._strip_protocol(path)
         entry = self.sfs.get(path)
-        return entry.open()
+        return _MemberFileProxy(entry.open())
+
+    def close(self):
+        if self._closed:
+            return
+        self._closed = True
+        try:
+            if hasattr(self.sfs, "close"):
+                self.sfs.close()
+        finally:
+            if self._close_fo and self.fo is not None:
+                self.fo.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+class _MemberFileProxy(io.IOBase):
+    """Minimal logical stream wrapper with real close semantics."""
+
+    def __init__(self, raw):
+        self._raw = raw
+
+    def readable(self):
+        return not self.closed
+
+    def writable(self):
+        return False
+
+    def seekable(self):
+        return not self.closed and hasattr(self._raw, "seek")
+
+    def read(self, size=-1):
+        if self.closed:
+            raise ValueError("I/O operation on closed file.")
+        return self._raw.read(size)
+
+    def readline(self, size=-1):
+        if self.closed:
+            raise ValueError("I/O operation on closed file.")
+        return self._raw.readline(size)
+
+    def seek(self, offset, whence=io.SEEK_SET):
+        if self.closed:
+            raise ValueError("I/O operation on closed file.")
+        return self._raw.seek(offset, whence)
+
+    def tell(self):
+        if self.closed:
+            raise ValueError("I/O operation on closed file.")
+        return self._raw.tell()
+
+    def close(self):
+        if self.closed:
+            return
+        try:
+            self._raw.close()
+        finally:
+            super().close()
+
+    def __getattr__(self, name):
+        return getattr(self._raw, name)
 
 
 class OffsetWrapper:
