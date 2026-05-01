@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v0.1.3 (2026-05-01)
+
+### Fixes
+- Fix version number ([#22](https://github.com/observingClouds/squashfsspec/pull/22))
+
 ## v0.1.2 (2026-05-01)
 
 ### Changes
