@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v0.1.2 (2026-05-01)
 
 ### Changes
 - Added closing of file system and sub-files ([#20](https://github.com/observingClouds/squashfsspec/pull/20))
