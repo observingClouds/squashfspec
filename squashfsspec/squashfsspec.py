@@ -57,7 +57,6 @@ class SquashFSFileSystem(AbstractFileSystem):
         return self._closed or bool(getattr(self.fo, "closed", False))
 
     def _check_closed(self):
-        return
         if self.closed:
             raise ValueError("I/O operation on closed filesystem.")
 
