@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## v0.1.4 (2026-05-01)
+- Fixing pypi release
+
 ## v0.1.3 (2026-05-01)
 
 ### Fixes
