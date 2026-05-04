@@ -3,6 +3,10 @@
 ## v0.1.4 (2026-05-01)
 - Fixing pypi release
 
+### Documentation
+
+- Add `HOW_TO_RELEASE.md` with step-by-step release instructions ([#25](https://github.com/observingClouds/squashfsspec/pull/25))
+
 ## v0.1.3 (2026-05-01)
 
 ### Fixes
